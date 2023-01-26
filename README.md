@@ -1,39 +1,13 @@
-# COMP1140 Assignment 2
+# COMP1140 Course Project
 
-## Academic Honesty and Integrity
+## Note this is the import of the past course project, by auther Tony Yan, Zhen Wang and Jingyang You.
 
-Honesty and integrity are of utmost importance. These goals are *not* at odds with being resourceful and working collaboratively. You *should* be resourceful, you should collaborate within your team, and you should discuss the assignment and other aspects of the course with others taking the class. However, *you must never misrepresent the work of others as your own*. If you have taken ideas from elsewhere or used code sourced from elsewhere, you must say so with *utmost clarity*. At each stage of the assignment you will be asked to submit a statement of originality, either as a group or as individuals. This statement is the place for you to declare which ideas or code contained in your submission were sourced from elsewhere.
+## After configure, the game interface will show as below:
+<img width="1028" alt="截屏2023-01-27 上午3 27 09" src="https://user-images.githubusercontent.com/58197992/214892373-5997c7f4-1c66-443e-91bf-d3a775673917.png">
 
-Please read the ANU's [official position](http://academichonesty.anu.edu.au/) on academic honesty. If you have any questions, please ask me.
+### The game.jar is not upload.
 
-Carefully review the [statement of originality](originality.md) which you must complete.  Edit that statement and update it as you complete each stage of the assignment, ensuring that when you complete each stage, a truthful statement is committed and pushed to your repo.
-
-## Purpose
-
-In this assignment you will work as a group to master a number of major themes of this course,
-including software design and implementation,
-using development tools such as Git and IntelliJ, and using JavaFX to build a user interface.
-As an extension task, you may also explore strategies for writing agents that play games.
-Above all, this assignment will emphasize group work; 
-while you will receive an individual mark for your work based on your contributions to the assignment,
-you can only succeed if all members contribute to your group's success.
-
-## Assignment Deliverables
-
-The assignment is worth 25% of your total assessment, and it will be marked out of 25.
-So each mark in the assignment corresponds to a mark in your final assessment for the course.
-Note that for some stages of the assignment you will get a _group_ mark, and for others you will be _individually_ marked.
-The mark breakdown and the due dates are described on the [deliverables](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/) page.
-
-Your work will be marked via your tutor accessing Git, so it is essential that you carefully follow instructions for setting up and maintaining your group repository.
-At each deadline you will be marked according to whatever is committed to your repository at the time of the deadline.
-You will be assessed on how effectively you use Git as a development tool.
-
-## Problem Description
-
-Your task is to implement in Java, using JavaFX, a board game called [Agamemnon](https://ospreypublishing.com/agamemnon),
-designed by Günter Cornett and made by games developer [Osprey Publishing](https://ospreypublishing.com/).
-[Board Game Geek provides a description of Agamemnon](https://boardgamegeek.com/boardgame/193693/agamemnon), including images of the components.
+## The board game called [Agamemnon](https://ospreypublishing.com/agamemnon) designed by Günter Cornett. This version is an implementation by us using Java and JavaFx for UI.
 
 ### Game Rules 
 
@@ -186,99 +160,3 @@ L0001S0002E0004F0104S0105S0203L0204L0206S0306S0307F0408E0409F0508L0510L0607L0609
 
 There are 24 such mappings (24 permutations of the four edge types).
 In the Loom variant, a warp tile allows an edge of 'S', 'L', or 'F' type to be swapped with an empty edge.
-
-
-## Use Your Creativity!
-
-While Günter Cornett's design for the Agamemnon game uses themes from Ancient Greece and the Trojan War, the game itself is entirely abstract.
-In other words, you may design entirely different artwork, piece names, and/or story for the game while keeping the gameplay identical.
-We encourage you to be as creative as you want in presenting your game; the only requirements are that it should correctly implement the rules of the Agamemnon game, and function according to the provided Java API.
-
-## Legal and Ethical Issues
-
-First, as with any work you do, you must abide by the principles of [honesty and integrity](http://academichonesty.anu.edu.au).
-We expect you to demonstrate honesty and integrity in everything you do.
-
-In addition to those ground rules, you are to follow the rules one would normally be subject to in a commercial setting.
-In particular, you may make use of the works of others under two fundamental conditions: 
-a) your use of their work must be clearly acknowledged, and 
-b) your use of their work must be legal (for example, consistent with any copyright and licensing that applies to the given material).
-*Please understand that violation of these rules is a very serious offence.* 
-However, as long as you abide by these rules, you are explicitly invited to conduct research and make use of a variety of sources.
-You are also given an explicit means with which to declare your use of other sources (via originality statements you must complete).
-It is important to realize that you will be assessed on the basis of your original contributions to the project.
-While you won't be penalized for correctly attributed use of others' ideas, the work of others will not be considered as part of your contribution.
-Therefore, these rules allow you to copy another student's work entirely if: 
-a) they gave you permission to do so, and 
-b) you acknowledged that you had done so.
-Notice, however, that if you were to do this you would have no original contribution and so would receive no marks for the assignment (but you would not have broken any rules either).
-
-## Evaluation Criteria
-
-It is essential that you refer to the [deliverables page](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/) to check that you understand each of the deadlines and what is required.
-Your assignment will be marked via tests run through GitLab's continuous integration (CI) framework, so all submittable materials will need to be in your GitLab repository in the *correct* locations, as prescribed by the [deliverables page](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/).
-
-**The mark breakdown is described on the
-[deliverables](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/) page.**
-
-### Part One
-
-In the first part of the assignment you will:
-* Implement parts of the text interface to the game (Tasks #2, and #3).
-* Implement a simple viewer that allows you to visualize game states (Task #4).
-
-An indicative grade level for each task for the [completion of part one](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/#D2C) is as follows:
-
-<a name="p"></a>
-**Pass**
-* Tasks #2 and #3
-
-<a name="cr"></a>
-**Credit**
-* Task #4 *(in addition to all tasks required for Pass)*
-
-<a name="d"></a>
-**Distinction**
-* Task #5 and #6 *(in addition to all tasks required for Credit)*
-
-
-### Part Two
-
-Create a fully working game, using JavaFX to implement a playable graphical version of the game in a 1024x768 window.
-
-Notice that aside from the window size, the details of exactly how the game looks etc, are **intentionally** left up to you.
-The diagrams above are for illustration purposes only, although you are welcome to use all of the resources provided in this repo, including the bitmap images.
-
-The only **firm** requirements are that:
-
-* you use Java and JavaFX,
-* the game respects the specification of the game given here,
-* the game be easy to play,
-* it runs in a 1024x768 window, and
-* that it is executable on a standard lab machine from a JAR file called `game.jar`,
-
-Your game must successfully run from `game.jar` from within another user's (i.e. your tutor's) account on a standard lab machine (in other words, your game must not depend on features not self-contained within that jar file, the Java 11 runtime and the JavaFX library).
-
-An indicative grade level for each task for the [completion of part two](https://cs.anu.edu.au/courses/comp1110/assessments/deliverables/#D2G) is as follows:
-
-<a name="2p"></a>
-**Pass**
-* Correctly implements all of the <b>Part One</b> criteria.
-* Appropriate use of git (as demonstrated by the history of your repo).
-* Completion of Tasks #7 and #8
-* Executable on a standard lab computer from a runnable jar file, game.jar, which resides in the root level of your group repo.
-
-<a name="2c"></a>
-**Credit**
-* _All of the Pass-level criteria, plus the following..._
-* Task #9
-
-<a name="2d"></a>
-**Distinction**
-* _All of the Credit-level criteria, plus the following..._
-* Tasks #10 and #11
-
-<a name="2hd"></a>
-**High Distinction**
-* _All of the Distinction-level criteria, plus the following..._
-* Tasks #12 and #13
