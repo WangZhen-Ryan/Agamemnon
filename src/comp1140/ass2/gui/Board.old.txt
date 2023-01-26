@@ -1,0 +1,267 @@
+package comp1140.ass2.gui;
+
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+
+import java.util.ArrayList;
+
+//author: Jingyang You
+public class Board extends Application {
+
+    //some basic parameters
+    private static final int WINDOWS_WIDTH = 1024;
+    private static final int WINDOWS_HEIGHT = 768;
+    private static final int BOARD_WIDTH = 960;
+    private static final int BOARD_HEIGHT = 640;
+    private double[] x_midpoint = calculatingXMidPoint();
+    private double[] y_midpoint = calculatingYMidPoint();
+
+    //these two double[] are used to record the coordinates of the nodes.
+    private static final double[] x_coordinate = {29, 91, 93, 93, 158, 200, 204, 204,
+            265, 265, 330, 330, 330, 393, 393, 457,
+            443, 443, 503, 503, 568, 568, 568, 630,
+            630, 695, 677, 740, 740, 803, 868, 868};
+
+    private static final double[] y_coordinate = {198, 84, 310, 440, 196, 20, 375, 502,
+            130, 260, 20, 375, 502, 130, 260, 20,
+            435, 566, 196, 325, 83, 435, 566, 196,
+            325, 83, 500, 260, 388, 145, 260, 388};
+
+    //this String[] records which pairs of the nodes are connected
+    private static final String[] node_connection = {"0001", "1315", "1114", "0204"
+            , "1619", "1820", "2325", "2628", "2729", "0508", "0911", "1921", "2930"
+            , "0105", "0408", "0306", "1216", "1418", "2226", "2427", "0206", "0307"
+            , "0409", "1217", "1419", "1520", "2529", "2428", "2126", "0203", "0809"
+            , "1112", "1314", "1617", "2122", "2324", "2728", "3031", "0004", "0611"
+            , "0712", "0510", "0813", "1015", "1722", "1924", "1823", "2025", "2831"};
+
+    private static final String URI_BASE = "assets/";
+    private static final Group originalPlacement = new Group();
+
+    //to judge whether a placement is valid
+    private ArrayList<Integer> snapTileCount = new ArrayList<>();
+    private ArrayList<Integer> snapEdgeCount = new ArrayList<>();
+
+    //generating all pieces
+    private final DraggableTile[] draggableTiles = new DraggableTile[33];
+
+    class DraggableTile extends ImageView{
+        int homeX, homeY;           // the original position
+        double mouseX, mouseY;      // the last known mouse positions (used when dragging)
+        int number;              // the index of the tile/edges
+        int rotation_accumulator = 1;      // to record the scroll times, in order to rotate the pieces accordingly.
+
+        DraggableTile(int number) {
+            this.number = number;
+            //construct tiles according to their index
+            if (number >= 0 && number < 15){
+                homeX = 68 * number;
+                homeY = 640;
+                setFitHeight(60);
+                setFitWidth(60);
+                if (number < 5){ // Leader a-e
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "O" + (char) (number + 97) + ".png").toString()));
+                }
+                else if (number < 8){ // Warrior f
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Of.png").toString()));
+                }
+                else if (number < 10) { // Warrior g
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Og.png").toString()));
+                }
+                else if (number == 10){ // Warrior h
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Oh.png").toString()));
+                }
+                else if (number < 13){ // Weft i
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Oi.png").toString()));
+                }
+                else{ // Warp j
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Oj.png").toString()));
+                }
+            }
+
+            else if (number >= 15 && number < 30){
+                homeX = 68 * (number - 15);
+                homeY = 700;
+                setFitHeight(60);
+                setFitWidth(60);
+                if (number < 20){//images in terms of Black
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "B" + (char) (number + 82) + ".png").toString()));
+                }
+                else if (number < 23){
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Bf.png").toString()));
+                }
+                else if (number < 25) {
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Bg.png").toString()));
+                }
+                else if (number == 25){
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Bh.png").toString()));
+                }
+                else if (number < 28){
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Bi.png").toString()));
+                }
+                else{
+                    setImage(new Image(Viewer.class.getResource(URI_BASE + "Bj.png").toString()));
+                }
+            }
+
+            else if (number >= 30 && number <= 32){
+                homeX = 960;
+                homeY = 150 * (number - 30) + 150;
+                setFitHeight(25);
+                setFitWidth(65);
+            }
+
+            // Images of three strings of fate
+            if (number == 30){setImage(new Image(Board.class.getResource(URI_BASE + "force.png").toString())); }
+            else if (number == 31){setImage(new Image(Board.class.getResource(URI_BASE + "leadership.png").toString())); }
+            else if (number == 32){setImage(new Image(Board.class.getResource(URI_BASE + "strength.png").toString())); }
+
+            //set the original position
+            setLayoutX(homeX);
+            setLayoutY(homeY);
+
+            /* event handlers */
+            setOnScroll(event -> {            // scroll to change orientation
+                setRotate(30 * rotation_accumulator);
+                rotation_accumulator ++;
+                event.consume();
+            });
+            setOnMousePressed(event -> {      // mouse press indicates begin of drag
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
+            });
+            setOnMouseDragged(event -> {      // mouse is being dragged
+                toFront();
+                double movementX = event.getSceneX() - mouseX;
+                double movementY = event.getSceneY() - mouseY;
+                setLayoutX(getLayoutX() + movementX);
+                setLayoutY(getLayoutY() + movementY);
+                mouseX = event.getSceneX();
+                mouseY = event.getSceneY();
+                event.consume();
+            });
+            setOnMouseReleased(event -> {     //mouse is released
+                if (number >= 0 && number < 30) {
+                    snappingTiles();
+                }
+                else if (number >= 30 && number <=32){
+                    //correct the mouse position, so the pieces will react properly.
+                    mouseX -= 15;
+                    mouseY -= 30;
+                    snappingEdges();
+                }
+
+            });
+        }
+
+        //method used to snap tiles.
+        private void snappingTiles(){
+            boolean bool = false;
+            for (int i = 0; i < 32; i++) {
+                if (Math.abs(mouseX - x_coordinate[i]) < 70
+                     && Math.abs(mouseY - y_coordinate[i]) < 70){
+                    if (!snapTileCount.contains(i)){
+                        snapTileCount.add(i);
+                        mouseX = x_coordinate[i];
+                        mouseY = y_coordinate[i];
+                        bool = true;
+                    }
+                    break;
+                }
+            }
+            if (!bool){
+                mouseX = homeX;
+                mouseY = homeY;
+            }
+            setLayoutX(mouseX);
+            setLayoutY(mouseY);
+        }
+
+        //method used to snap the edges.
+        private void snappingEdges(){
+            boolean bool = false;
+            for (int i = 0; i < 49; i++) {
+                if (Math.abs(mouseX - x_midpoint[i]) < 40
+                        && Math.abs(mouseY - y_midpoint[i]) < 40){
+                    if (!snapEdgeCount.contains(i)){
+                        snapEdgeCount.add(i);
+                        mouseX = x_midpoint[i];
+                        mouseY = y_midpoint[i] + 20;
+                        bool = true;
+                    }
+                    break;
+                }
+            }
+            if (!bool){
+                mouseX = homeX;
+                mouseY = homeY;
+            }
+            setLayoutX(mouseX);
+            setLayoutY(mouseY);
+
+            //we have many edges to place, so make sure another is prepared after one edge is placed on the board.
+            if (bool) {
+                DraggableTile last = new DraggableTile(number);
+                last.setLayoutY(homeX);
+                last.setLayoutY(homeY);
+                last.setFitWidth(65);
+                last.setFitHeight(25);
+                originalPlacement.getChildren().add(last);
+            }
+        }
+    }
+
+    //set the original placement of the game(including the board)
+    private void setPlacement(){
+        ImageView board = new ImageView();
+        Image boardImage = new Image(Viewer.class.getResource(URI_BASE + "example.png").toString());
+        board.setImage(boardImage);
+        board.setFitWidth(BOARD_WIDTH);
+        board.setFitHeight(BOARD_HEIGHT);
+        board.setRotate(-0.1);
+        originalPlacement.getChildren().add(board);
+
+        //add tiles to the scene to be displayed
+        for (int i = 0; i < draggableTiles.length; i++) {
+            draggableTiles[i] = new DraggableTile(i);
+            originalPlacement.getChildren().add(draggableTiles[i]);
+        }
+
+    }
+
+    //To calculate all the midpoints of the connected notes, we use these two methods to achieve a better efficiency.
+    private double[] calculatingXMidPoint(){
+        double[] x_midpoint = new double[49];
+
+        for (int i = 0; i < 49; i++) {
+            x_midpoint[i] = 0.5 * (x_coordinate[Integer.parseInt(node_connection[i].substring(0, 2))]
+                    + x_coordinate[Integer.parseInt(node_connection[i].substring(2, 4))]);
+        }
+        return x_midpoint;
+    }
+
+    private double[] calculatingYMidPoint(){
+        double[] y_midpoint = new double[49];
+
+        for (int i = 0; i < 49; i++) {
+            y_midpoint[i] = 0.5 * (y_coordinate[Integer.parseInt(node_connection[i].substring(0, 2))]
+                    + y_coordinate[Integer.parseInt(node_connection[i].substring(2, 4))]);
+        }
+
+        return y_midpoint;
+    }
+
+    //start the show.
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Agamemnon Board");
+        setPlacement();
+        Scene scene = new Scene(originalPlacement, WINDOWS_WIDTH, WINDOWS_HEIGHT);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+}

@@ -1,0 +1,236 @@
+package comp1140.ass2.gui;
+
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import java.util.ArrayList;
+
+//author: Jingyang You
+/**
+ * A very simple viewer for board states in the Agamemnon game.
+ * <p>
+ * NOTE: This class is separate from your main game class.  This
+ * class does not play a game, it just illustrates various board states.
+ */
+public class Viewer extends Application {
+
+    /* board layout */
+    private static final int VIEWER_WIDTH = 1024;
+    private static final int VIEWER_HEIGHT = 768;
+
+    private static final String URI_BASE = "assets/";
+
+    private final Group root = new Group();
+    private final Group controls = new Group();
+    private TextField tilesTextField;
+    private TextField edgesTextField;
+
+    
+    //these two double[] are used to record the coordinates of the nodes. 
+    private double[] x_coordinate = {29, 91, 93, 93, 158, 200, 204, 204,
+            265, 265, 330, 330, 330, 393, 393, 457,
+            443, 443, 503, 503, 568, 568, 568, 630,
+            630, 695, 677, 740, 740, 803, 868, 868};
+
+    private double[] y_coordinate = {198, 84, 310, 440, 196, 20, 375, 502,
+            130, 260, 20, 375, 502, 130, 260, 20,
+            435, 566, 196, 325, 83, 435, 566, 196,
+            325, 83, 500, 260, 388, 145, 260, 388};
+
+    /**
+     * Draw a placement in the window, removing any previously drawn one
+     *
+     * @param state an array of two strings, representing the current game state
+     */
+    private void displayState(String[] state) {
+        //generating game board
+        ImageView board = new ImageView();
+        Image boardImage = new Image(Viewer.class.getResource(URI_BASE + "example.png").toString());
+        board.setImage(boardImage);
+        board.setFitWidth(960);
+        board.setFitHeight(640);
+
+        //all the images to be displayed are collected here.
+        ArrayList<ImageView>imageViews = new ArrayList<>();
+
+        //generating ImageView[] tiles to print altogether 20 types of tiles on screen.
+        ImageView[] tiles = new ImageView[20];
+        for (int i = 0; i < 10; i++) {
+            tiles[i] = new ImageView();
+            tiles[i].setImage(new Image(Viewer.class.getResource(URI_BASE + "O" + (char) (i + 97) + ".png").toString()));
+        }
+        for (int i = 10; i < 20; i++) {
+            tiles[i] = new ImageView();
+            tiles[i].setImage(new Image(Viewer.class.getResource(URI_BASE + "B" + (char) (i + 87) + ".png").toString()));
+        }
+
+        //generating ImageView[] edges to print altogether 4 types of edges on screen.
+        ImageView[] edges = new ImageView[3];
+        for (int i = 0; i < 3; i++) {
+            edges[i] = new ImageView();
+        }
+        edges[0].setImage(new Image(Viewer.class.getResource(URI_BASE + "force.png").toString()));
+        edges[1].setImage(new Image(Viewer.class.getResource(URI_BASE + "leadership.png").toString()));
+        edges[2].setImage(new Image(Viewer.class.getResource(URI_BASE + "strength.png").toString()));
+
+        //interpreting tiles placement
+        String tileString = state[0];
+        for (int i = 0; i < tileString.length(); i += 4) {
+            ImageView last = new ImageView();
+            String nodeNumber = tileString.substring(i + 2, i + 4);
+            if (tileString.charAt(i) == 'O'){
+                last.setImage(tiles[tileString.charAt(i + 1) - 97].getImage());
+                setCoordinate(nodeNumber, last);
+                last.setFitWidth(60);
+                last.setFitHeight(60);
+                imageViews.add(last);
+            }
+            else {
+                last.setImage(tiles[tileString.charAt(i + 1) - 87].getImage());
+                setCoordinate(nodeNumber, last);
+                last.setFitWidth(60);
+                last.setFitHeight(60);
+                imageViews.add(last);
+            }
+        }
+
+        //interpreting edges placement
+        String edgeString = state[1];
+        for (int i = 0; i < edgeString.length(); i += 5){
+            ImageView lastImage = new ImageView();
+            char edgeType = edgeString.charAt(i);
+            String endPointA = edgeString.substring(i + 1, i + 3);
+            String endPointB = edgeString.substring(i + 3, i + 5);
+            if (edgeType == 'F') {
+                lastImage.setImage(edges[0].getImage());
+                lastImage.setFitWidth(60);
+                lastImage.setFitHeight(25);
+            } else if (edgeType == 'L') {
+                lastImage.setImage(edges[1].getImage());
+                lastImage.setFitWidth(60);
+                lastImage.setFitHeight(25);
+            } else if (edgeType == 'S') {
+                lastImage.setImage(edges[2].getImage());
+                lastImage.setFitWidth(60);
+                lastImage.setFitHeight(25);
+            }
+
+            int endPointNumberA = Integer.parseInt(endPointA);
+            int endPointNumberB = Integer.parseInt(endPointB);
+
+            lastImage.setX(0.5 * (x_coordinate[endPointNumberA] + x_coordinate[endPointNumberB]));
+            lastImage.setY(0.5 * (y_coordinate[endPointNumberA] + y_coordinate[endPointNumberB]) + 20);
+
+            String concatAB = endPointA + endPointB;
+
+            switch (concatAB) {
+                case "0001":
+                case "1315":
+                case "1114":
+                case "0204":
+                case "1619":
+                case "1820":
+                case "2325":
+                case "2628":
+                case "2729":
+                    lastImage.setRotate(-60);
+                    break;
+                case "0508":
+                case "0911":
+                case "1921":
+                case "2930":
+                    lastImage.setRotate(60);
+                    break;
+                case "0105":
+                case "0408":
+                case "0306":
+                case "1216":
+                case "1418":
+                case "2226":
+                case "2427":
+                    lastImage.setRotate(-30);
+                    break;
+                case "0206":
+                case "0307":
+                case "0409":
+                case "1217":
+                case "1419":
+                case "1520":
+                case "2529":
+                case "2428":
+                case "2126":
+                    lastImage.setRotate(30);
+                    break;
+                case "0203":
+                case "0809":
+                case "1112":
+                case "1314":
+                case "1617":
+                case "2122":
+                case "2324":
+                case "2728":
+                case "3031":
+                    lastImage.setRotate(90);
+            }
+            imageViews.add(lastImage);
+        }
+        root.getChildren().add(board);
+        root.getChildren().addAll(imageViews);
+    }
+
+
+    /**
+     * Set a correct origin position for given nodes.
+     */
+    private void setCoordinate(String nodeNumber, ImageView tile) {
+        int i = Integer.parseInt(nodeNumber);
+        tile.setX(x_coordinate[i]);
+        tile.setY(y_coordinate[i]);
+    }
+
+
+
+    /**
+     * Create a basic text field for input and a refresh button.
+     *
+     */
+    private void makeControls() {
+        Label pieceLabel = new Label("Tiles:");
+        tilesTextField = new TextField();
+        tilesTextField.setPrefWidth(200);
+        Label edgesLabel = new Label("Edges:");
+        edgesTextField = new TextField();
+        edgesTextField.setPrefWidth(300);
+        Button button = new Button("Refresh");
+        button.setOnAction(e -> displayState(new String[]{tilesTextField.getText(), edgesTextField.getText()}));
+        HBox hb = new HBox();
+        hb.getChildren().addAll(pieceLabel, tilesTextField, edgesLabel, edgesTextField, button);
+        hb.setSpacing(10);
+        hb.setLayoutX(50);
+        hb.setLayoutY(VIEWER_HEIGHT - 50);
+        controls.getChildren().add(hb);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Agamemnon Viewer");
+        Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
+
+        root.getChildren().add(controls);
+
+        makeControls();
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+}
